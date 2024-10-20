@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Simple Site</title>
+    <style>
+        body {
+            background-color: #003366; /* لون الكحلي */
+            color: white; /* تغيير لون النص إلى الأبيض */
+        }
+        #lyrics {
+            margin-top: 20px;
+            font-size: 18px; /* حجم الخط */
+        }
+    </style>
+</head>
+<body>
+    <p>👇🏻 اضغطي</p>
+    <ul>
+        <li><a href="#" onclick="showVideo('https://www.youtube.com/embed/lwMacntfCY4') " style="color: white;">❤️</a></li>
+    </ul>
+    <iframe id="videoPlayer" width="600" height="400" style="display:none;" frameborder="0" allowfullscreen></iframe>
+
+    <div id="lyrics" style="display:none;">
+        <p>❤️اهداء من وديده لـ رفعه</p>
+        <p>شلـون مـا اغليـك<br>وأنت الـذي علمتنـي حبــك<br>يا هـاجـسي ... عشقـي عيـونـك<br>إسـأل ... وتلقـى الجـواب<br>فـي ناظـرة عيـونــي<br>تصـويـر لآجمـل عــذاب<br>حبـك يـا مفتـونــي</p>
+        <p>تلقـي حيـاتـي كلهـا لـذة غــرام<br>مهمـا سهـر طـرفــي<br>أو جـارت ظـروفــي<br>أو عشـت أنـا الحـرمــــان<br>تلقـى حياتـي كلها لـذه غــرام</p>
+        <p>يـا عـذب الصفـات ... يا كـل الحيــاة<br>صبـرك علــي ... هـذا قليـل<br>مهمـا تـرى مـن تضحيــات<br>هذا قليـل ... خل السهـر لعيـون مـن حبـــك<br>خـل العيـون اللـي لهـا عشقـي تبــات</p>
+    </div>
+
+    <script>
+        function showVideo(videoSrc) {
+            var videoPlayer = document.getElementById('videoPlayer');
+            videoPlayer.src = videoSrc;
+            videoPlayer.style.display = 'block';
+            document.getElementById('lyrics').style.display = 'block'; // إظهار كلمات الأغنية
+        }
+    </script>
+</body>
+</html>
