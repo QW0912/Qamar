@@ -60,13 +60,18 @@
 <body>
     <h1>ألعاب ممتعة</h1>
     
-    <h2>اختر لعبة</h2>
-    <button onclick="showGame('wordGuess')">لعبة تخمين الكلمة</button>
-    <button onclick="showGame('ticTacToe')">لعبة إكس أو</button>
-    <button onclick="showGame('luckGame')">لعبة الحظ</button>
+    <h2>قبل أن تبدأ، عليك الإجابة على السؤال:</h2>
+    <p>شمر أيش؟</p>
+    <input type="text" id="answerInput" placeholder="أدخل الإجابة هنا">
+    <button onclick="checkAnswer()">تأكيد</button>
 
     <div id="gameArea" style="display:none;">
-        <!-- محتوى الألعاب سيظهر هنا -->
+        <h2>اختر لعبة</h2>
+        <button onclick="showGame('wordGuess')">لعبة تخمين الكلمة</button>
+        <button onclick="showGame('ticTacToe')">لعبة إكس أو</button>
+        <button onclick="showGame('luckGame')">لعبة الحظ</button>
+
+        <div id="games" style="display:none;"></div>
     </div>
 
     <audio id="catchSound" src="https://www.soundjay.com/human/sounds/catch-1.mp3" preload="auto"></audio>
@@ -100,9 +105,19 @@
             { word: "تفاح", hint: "فاكهة لذيذة" }
         ];
 
+        function checkAnswer() {
+            const answer = document.getElementById('answerInput').value;
+            if (answer === "دوله") {
+                document.getElementById('gameArea').style.display = 'block';
+                document.getElementById('answerInput').value = ''; // مسح الإجابة
+            } else {
+                alert("إجابة خاطئة، حاول مرة أخرى.");
+            }
+        }
+
         function showGame(game) {
-            document.getElementById('gameArea').style.display = 'block';
-            document.getElementById('gameArea').innerHTML = ''; // تنظيف منطقة الألعاب
+            document.getElementById('games').style.display = 'block';
+            document.getElementById('games').innerHTML = ''; // تنظيف منطقة الألعاب
 
             if (game === 'wordGuess') {
                 startWordGuessGame();
@@ -125,7 +140,7 @@
                 <div id="wordResult"></div>
                 <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
             `;
-            document.getElementById('gameArea').appendChild(gameContainer);
+            document.getElementById('games').appendChild(gameContainer);
             const randomWord = wordsWithHints[Math.floor(Math.random() * wordsWithHints.length)];
             document.getElementById('hint').innerText = `تلميح: ${randomWord.hint}`;
             startWordTimer(randomWord.word);
@@ -173,7 +188,7 @@
                 <p id="xOStatus">اختر نمط اللعب:</p>
                 <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
                 <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
-                <div class="board" id="board">
+                <div class="board" id="board" style="display: none;">
                     <div class="cell" data-index="0"></div>
                     <div class="cell" data-index="1"></div>
                     <div class="cell" data-index="2"></div>
@@ -187,14 +202,18 @@
                 <div id="xOResult"></div>
                 <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
             `;
-            document.getElementById('gameArea').appendChild(gameContainer);
-            setupTicTacToe();
-            startXOTimer();
+            document.getElementById('games').appendChild(gameContainer);
         }
 
         let currentPlayer = 'X';
         let board = Array(9).fill(null);
         let xOTimer;
+
+        function startLocalGame(mode) {
+            document.getElementById('board').style.display = 'grid'; // عرض لوحة إكس أو
+            setupTicTacToe();
+            startXOTimer();
+        }
 
         function setupTicTacToe() {
             const cells = document.querySelectorAll('.cell');
@@ -267,13 +286,14 @@
                 </div>
                 <button onclick="throwBall()">ارمي الكرة</button>
                 <div id="luckResult"></div>
+                <div id="luckTimer">المؤقت: <span id="luckTime">30</span> ثواني</div>
             `;
-            document.getElementById('gameArea').appendChild(gameContainer);
+            document.getElementById('games').appendChild(gameContainer);
         }
 
         let luckScore = 0;
         function throwBall() {
-            if (luckScore < 2) {
+            if (luckScore < 2 && attempts < 4) {
                 // محاكاة دخول الكرة
                 const randomChance = Math.random() < 0.5; // 50% فرصة لدخول الكرة
                 if (randomChance) {
@@ -283,14 +303,12 @@
                     document.getElementById('luckResult').innerHTML = `<span class="loser">لم تدخل الكرة!</span>`;
                 }
 
+                attempts++;
                 if (luckScore === 2) {
                     document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
                     document.getElementById('clapSound').play();
                     clearInterval(luckTimer);
-                }
-
-                attempts++;
-                if (attempts >= 4) {
+                } else if (attempts >= 4) {
                     document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
                     document.getElementById('laughSound').play();
                     clearInterval(luckTimer);
