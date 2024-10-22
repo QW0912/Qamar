@@ -89,7 +89,7 @@
     <audio id="purchaseSound" src="https://www.soundjay.com/button/sounds/button-1.mp3" preload="auto"></audio>
     <audio id="goalSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
     <audio id="clapSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
-    <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio">
+    <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio>
 
     <script>
         const wordsWithHints = [
@@ -157,7 +157,7 @@
             startWordTimer(randomWord.word);
         }
 
-        function checkWord(correctWord) {
+        function checkWord() {
             const input = document.getElementById('wordInput').value;
             if (input === correctWord) {
                 document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
@@ -182,7 +182,8 @@
 
             const wordTimer = setInterval(function() {
                 timeLeft--;
-                document.getElementById('wordTime').innerText = timeLeft;
+                document.getElementById('wordTime').
+                innerText = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(wordTimer);
                     document.getElementById('wordResult').innerHTML = `<span class="loser">انتهت اللعبة! الكلمة الصحيحة كانت "${correctWord}".</span>`;
