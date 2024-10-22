@@ -3,39 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Simple Site</title>
+    <title>Games Collection</title>
     <style>
         body {
-            background-color: #003366; /* لون الكحلي */
-            color: white; /* تغيير لون النص إلى الأبيض */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
         }
-        #lyrics {
-            margin-top: 20px;
-            font-size: 18px; /* حجم الخط */
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        #gameArea {
+            margin-top: 50px;
+        }
+        canvas {
+            border: 1px solid black;
         }
     </style>
 </head>
 <body>
-    <p>👇🏻 اضغطي</p>
-    <ul>
-        <li><a href="#" onclick="showVideo('https://www.youtube.com/embed/lwMacntfCY4') " style="color: white;">❤️</a></li>
-    </ul>
-    <iframe id="videoPlayer" width="600" height="400" style="display:none;" frameborder="0" allowfullscreen></iframe>
 
-    <div id="lyrics" style="display:none;">
-        <p>❤️اهداء من وديده لـ رفعه</p>
-        <p>شلـون مـا اغليـك<br>وأنت الـذي علمتنـي حبــك<br>يا هـاجـسي ... عشقـي عيـونـك<br>إسـأل ... وتلقـى الجـواب<br>فـي ناظـرة عيـونــي<br>تصـويـر لآجمـل عــذاب<br>حبـك يـا مفتـونــي</p>
-        <p>تلقـي حيـاتـي كلهـا لـذة غــرام<br>مهمـا سهـر طـرفــي<br>أو جـارت ظـروفــي<br>أو عشـت أنـا الحـرمــــان<br>تلقـى حياتـي كلها لـذه غــرام</p>
-        <p>يـا عـذب الصفـات ... يا كـل الحيــاة<br>صبـرك علــي ... هـذا قليـل<br>مهمـا تـرى مـن تضحيــات<br>هذا قليـل ... خل السهـر لعيـون مـن حبـــك<br>خـل العيـون اللـي لهـا عشقـي تبــات</p>
+    <h1>Games Collection</h1>
+    
+    <button onclick="playTicTacToe()">Tic-Tac-Toe</button>
+    <button onclick="playNumberGuess()">Number Guessing</button>
+    <button onclick="playFastCounting()">Fast Counting</button>
+    <button onclick="playLuckGame()">Luck Game</button>
+    <button onclick="playFishingGame()">Fishing Game</button>
+
+    <div id="gameArea">
+        <!-- Game area where each game will be displayed -->
     </div>
 
     <script>
-        function showVideo(videoSrc) {
-            var videoPlayer = document.getElementById('videoPlayer');
-            videoPlayer.src = videoSrc;
-            videoPlayer.style.display = 'block';
-            document.getElementById('lyrics').style.display = 'block'; // إظهار كلمات الأغنية
+        function playTicTacToe() {
+            document.getElementById('gameArea').innerHTML = "<h2>Tic-Tac-Toe Game</h2>";
+            // Add Tic-Tac-Toe game code here
+        }
+
+        function playNumberGuess() {
+            document.getElementById('gameArea').innerHTML = "<h2>Number Guessing Game</h2>";
+            // Add Number Guessing game code here
+        }
+
+        function playFastCounting() {
+            document.getElementById('gameArea').innerHTML = "<h2>Fast Counting Game</h2>";
+            // Add Fast Counting game code here
+        }
+
+        function playLuckGame() {
+            document.getElementById('gameArea').innerHTML = "<h2>Luck Game</h2>";
+            // Add Luck game code here
+        }
+
+        function playFishingGame() {
+            document.getElementById('gameArea').innerHTML = `
+                <h2>Fishing Game</h2>
+                <canvas id="fishingCanvas" width="400" height="400"></canvas>
+            `;
+            startFishingGame();
+        }
+
+        function startFishingGame() {
+            const canvas = document.getElementById('fishingCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            let fishX = Math.random() * 350;
+            let fishY = Math.random() * 350;
+            
+            function drawFish() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "blue";
+                ctx.fillRect(fishX, fishY, 50, 30);
+            }
+
+            canvas.addEventListener('click', function (event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                if (x >= fishX && x <= fishX + 50 && y >= fishY && y <= fishY + 30) {
+                    alert("You caught the fish!");
+                    fishX = Math.random() * 350;
+                    fishY = Math.random() * 350;
+                }
+
+                drawFish();
+            });
+
+            drawFish();
         }
     </script>
+
 </body>
 </html>
