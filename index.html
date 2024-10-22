@@ -2,258 +2,260 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale: 1.0">
-    <title>ألعاب ممتعة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجموعة ألعاب ممتعة</title>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             text-align: center;
-            background-color: #87ceeb; /* لون السماء */
-            overflow: hidden;
+            background-color: #f0e68c;
+        }
+        h1 {
+            color: #ff4500;
+        }
+        .game-section {
+            display: none;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #ffebcd;
+            border-radius: 15px;
+        }
+        .active {
+            display: block;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border: 3px solid #000;
+            font-size: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
         }
         button {
+            margin: 10px;
             padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px; /* زوايا دائرية للأزرار */
-            background-color: #ff6347; /* لون خلفية الزر */
+            font-size: 1.2rem;
+            background-color: #ff6347;
             color: white;
-            transition: background-color 0.3s, transform 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* ظل للأزرار */
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #ff4500; /* لون الخلفية عند التمرير */
-            transform: scale(1.05); /* تكبير عند التمرير */
+            background-color: #ff4500;
         }
-        .winner {
-            font-size: 30px;
-            font-weight: bold;
-            color: green;
+        .timer {
+            display: inline;
+            font-size: 1.2rem;
+            color: #ff4500;
         }
-        .loser {
-            font-size: 30px;
-            font-weight: bold;
-            color: red;
-        }
-        #luckArea {
-            width: 300px;
-            height: 200px;
-            position: relative;
-            margin: auto;
-            overflow: hidden;
-            background-color: lightblue;
-            border: 2px solid #000;
-        }
+        /* تصميم لعبة الحظ */
         #goal {
             width: 100px;
             height: 50px;
-            background-color: brown; /* لون المرمى */
-            position: absolute;
-            bottom: 0;
-            left: calc(50% - 50px); /* يضع المرمى في المنتصف */
-            border: 2px solid black;
-            border-radius: 5px; /* زوايا دائرية للمرمى */
+            background-color: #007bff;
+            margin: 0 auto;
+            border-radius: 10px;
+            position: relative;
         }
         #ball {
-            width: 30px;
-            height: 30px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/3c/Football.png'); /* صورة كرة القدم */
-            background-size: cover;
+            width: 20px;
+            height: 20px;
+            background-color: #ff0000;
+            border-radius: 50%;
             position: absolute;
-            bottom: 20px; /* موضع الكرة */
-            left: calc(50% - 15px); /* يضع الكرة في المنتصف */
-            transition: bottom 0.5s;
+            top: 15px;
+            left: 40px;
+            transition: transform 0.5s;
+        }
+        .win-message {
+            font-size: 3rem; /* زيادة حجم الخط عند الفوز */
+            color: green;
         }
     </style>
 </head>
 <body>
-    <h1>ألعاب ممتعة</h1>
-    
-    <h2>قبل أن تبدأ، عليك الإجابة على السؤال:</h2>
-    <p>شمر أيش؟</p>
-    <input type="text" id="answerInput" placeholder="أدخل الإجابة هنا">
-    <button onclick="checkAnswer()">تأكيد</button>
+    <h1>مجموعة ألعاب ممتعة</h1>
+    <p>اختر اللعبة:</p>
+    <button onclick="showGame('ticTacToe')">لعبة إكس أو</button>
+    <button onclick="showGame('numberGuess')">لعبة تخمين الرقم</button>
+    <button onclick="showGame('fastClick')">لعبة العد السريع</button>
+    <button onclick="showGame('wordGuess')">لعبة تخمين الكلمة</button>
+    <button onclick="showGame('luckGame')">لعبة الحظ</button>
+    <button onclick="showGame('huntingGame')">لعبة الصيد</button>
 
-    <div id="gameArea" style="display:none;">
-        <h2>اختر لعبة</h2>
-        <button onclick="showGame('wordGuess')">لعبة تخمين الكلمة</button>
-        <button onclick="showGame('ticTacToe')">لعبة إكس أو</button>
-        <button onclick="showGame('luckGame')">لعبة الحظ</button>
+    <!-- لعبة إكس أو -->
+    <div id="ticTacToe" class="game-section">
+        <h2>لعبة إكس أو</h2>
+        <p id="status">اختر نمط اللعب:</p>
+        <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
+        <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
+        <button onclick="alert('والله مالي خلق أسوي "اللعب أونلاين" بس انتظروا لين يصير لي خلق')">اللعب أونلاين</button>
 
-        <div id="games" style="display:none;"></div>
+        <div id="gameArea">
+            <div class="board" id="board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <button onclick="resetGame()">إعادة اللعب</button>
+        </div>
     </div>
 
-    <audio id="catchSound" src="https://www.soundjay.com/human/sounds/catch-1.mp3" preload="auto"></audio>
-    <audio id="purchaseSound" src="https://www.soundjay.com/button/sounds/button-1.mp3" preload="auto"></audio>
-    <audio id="goalSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
+    <!-- لعبة تخمين الرقم -->
+    <div id="numberGuess" class="game-section">
+        <h2>لعبة تخمين الرقم</h2>
+        <p id="guessStatus">حاول تخمين الرقم من 1 إلى 50 (ثلاث محاولات فقط)</p>
+        <div id="guessGameArea">
+            <input type="number" id="guessInput" placeholder="أدخل رقم من 1 إلى 50" min="1" max="50">
+            <button onclick="submitGuess()">إرسال التخمين</button>
+            <p id="guessMessage"></p>
+            <button onclick="resetGuessGame()">إعادة اللعب</button>
+        </div>
+    </div>
+
+    <!-- لعبة العد السريع -->
+    <div id="fastClick" class="game-section">
+        <h2>العد السريع <span class="timer" id="countdownTimer">30</span> ثانية</h2>
+        <p id="countStatus">اضغط على الزر بأسرع وقت ممكن لتحقيق 50 نقرة!</p>
+        <button id="countButton" onclick="startCountGame()">ابدأ العد</button>
+        <p id="countMessage"></p>
+        <button onclick="resetCountGame()">إعادة اللعب</button>
+    </div>
+
+    <!-- لعبة تخمين الكلمة -->
+    <div id="wordGuess" class="game-section">
+        <h2>لعبة تخمين الكلمة</h2>
+        <p id="wordStatus">تخمين الكلمة (أي عدد من الأحرف)</p>
+        <p id="hintStatus">التلميح: <span id="hintMessage"></span></p>
+        <input type="text" id="wordInput" placeholder="أدخل كلمتك">
+        <button onclick="submitWordGuess()">إرسال التخمين</button>
+        <p id="wordMessage"></p>
+        <p>الوقت المتبقي: <span class="timer" id="wordCountdownTimer">30</span> ثانية</p>
+        <button onclick="resetWordGuess()">إعادة اللعب</button>
+    </div>
+
+    <!-- لعبة الحظ -->
+    <div id="luckGame" class="game-section">
+        <h2>لعبة الحظ</h2>
+        <p id="luckStatus">حاول أن تُدخل الكرة داخل المربع الأزرق!</p>
+        <div id="goal"><div id="ball"></div></div>
+        <button id="throwButton" onclick="throwBall()">ارمي الكرة!</button>
+        <p id="luckMessage"></p>
+        <p id="finalMessage" class="win-message"></p>
+        <button onclick="resetLuckGame()">إعادة اللعب</button>
+    </div>
+
+    <!-- لعبة الصيد -->
+    <div id="huntingGame" class="game-section">
+        <h2>لعبة الصيد</h2>
+        <p id="huntingStatus">اضغط على الزر لصيد الأسماك!</p>
+        <button id="catchButton" onclick="catchFish()">اصطاد السمكة!</button>
+        <p id="huntingMessage"></p>
+        <button onclick="resetHuntingGame()">إعادة اللعب</button>
+    </div>
+
     <audio id="clapSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
     <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio>
 
     <script>
-        const wordsWithHints = [
-            { word: "بطريق", hint: "كائن يعيش في الثلج" },
-            { word: "دب", hint: "كائن يعيش في الغابة" },
-            { word: "سمكة", hint: "كائن يعيش في الماء" },
-            { word: "فيل", hint: "أكبر حيوان على اليابسة" },
-            { word: "قطة", hint: "حيوان أليف مشهور" },
-            { word: "كلب", hint: "رفيق الإنسان" },
-            { word: "عصفور", hint: "يستطيع الطيران" },
-            { word: "أسد", hint: "ملك الغابة" },
-            { word: "جمل", hint: "يعيش في الصحراء" },
-            { word: "سلحفاة", hint: "حيوان بطيء" },
-            { word: "نسر", hint: "طائر جارح" },
-            { word: "خروف", hint: "يعيش في المزارع" },
-            { word: "ديك", hint: "يوقظ الناس في الصباح" },
-            { word: "فراشة", hint: "تحب الزهور" },
-            { word: "جندب", hint: "حشرة قافزة" },
-            { word: "دجاجة", hint: "تضع البيض" },
-            { word: "سنجاب", hint: "يحب الجوز" },
-            { word: "تمساح", hint: "يعيش في الماء" },
-            { word: "فراولة", hint: "فاكهة حمراء" },
-            { word: "بطيخ", hint: "فاكهة كبيرة" },
-            { word: "تفاح", hint: "فاكهة لذيذة" }
-        ];
-
-        function checkAnswer() {
-            const answer = document.getElementById('answerInput').value;
-            if (answer === "دوله") {
-                document.getElementById('gameArea').style.display = 'block';
-                document.getElementById('answerInput').value = ''; // مسح الإجابة
-            } else {
-                alert("إجابة خاطئة، حاول مرة أخرى.");
-            }
-        }
-
-        function showGame(game) {
-            document.getElementById('games').style.display = 'block';
-            document.getElementById('games').innerHTML = ''; // تنظيف منطقة الألعاب
-
-            if (game === 'wordGuess') {
-                startWordGuessGame();
-            } else if (game === 'ticTacToe') {
-                startTicTacToeGame();
-            } else if (game === 'luckGame') {
-                startLuckGame();
-            }
-        }
+        // المتغيرات العامة
+        let targetNumber, guessAttempts, countClicks, timeLeft;
+        const maxGuessAttempts = 3;
+        const maxClicks = 50;
+        let countTimer, countdownTimer;
 
         // لعبة تخمين الكلمة
-        function startWordGuessGame() {
-            const gameContainer = document.createElement('div');
-            gameContainer.innerHTML = `
-                <h2>تخمين الكلمة</h2>
-                <div id="hint"></div>
-                <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50">
-                <button onclick="checkWord()">تأكيد</button>
-                <button onclick="resetWordGame()">إعادة اللعب</button>
-                <div id="wordResult"></div>
-                <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
-            `;
-            document.getElementById('games').appendChild(gameContainer);
-            const randomWord = wordsWithHints[Math.floor(Math.random() * wordsWithHints.length)];
-            document.getElementById('hint').innerText = `تلميح: ${randomWord.hint}`;
-            startWordTimer(randomWord.word);
-        }
+        const words = [
+            { word: "تفاح", hint: "فاكهة حمراء" },
+            { word: "موز", hint: "فاكهة صفراء طويلة" },
+            { word: "برتقال", hint: "فاكهة دائرية" },
+            { word: "عنب", hint: "فاكهة صغيرة وحامضة" },
+            { word: "بطيخ", hint: "فاكهة كبيرة خضراء" },
+            { word: "بطريق", hint: "كائن يعيش في الثلج" },
+            { word: "دب", hint: "كائن كبير يعيش في الغابات" },
+            { word: "سمكة", hint: "تعيش في الماء" },
+            { word: "زرافة", hint: "حيوان طويل العنق" },
+            { word: "فيل", hint: "حيوان ضخم جداً" }
+        ];
+        let selectedWord, wordCountdownTimer;
 
-        function checkWord() {
-            const input = document.getElementById('wordInput').value;
-            if (input === correctWord) {
-                document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
-                document.getElementById('clapSound').play();
-                clearInterval(wordTimer);
-            } else {
-                document.getElementById('wordResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى. الكلمة الصحيحة هي "${correctWord}".</span>`;
-                document.getElementById('laughSound').play();
-                clearInterval(wordTimer);
-            }
-        }
-
-        function resetWordGame() {
-            document.getElementById('wordInput').value = '';
-            document.getElementById('wordResult').innerText = '';
-            startWordGuessGame(); // إعادة تشغيل اللعبة مع كلمة جديدة
-        }
-
-        function startWordTimer(correctWord) {
-            let timeLeft = 30;
-            document.getElementById('wordTime').innerText = timeLeft;
-
-            const wordTimer = setInterval(function() {
-                timeLeft--;
-                document.getElementById('wordTime').
-                innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(wordTimer);
-                    document.getElementById('wordResult').innerHTML = `<span class="loser">انتهت اللعبة! الكلمة الصحيحة كانت "${correctWord}".</span>`;
-                    document.getElementById('laughSound').play();
-                }
-            }, 1000);
+        // لعبة إكس أو
+        function showGame(gameId) {
+            document.querySelectorAll('.game-section').forEach(game => game.classList.remove('active'));
+            document.getElementById(gameId).classList.add('active');
+            if (gameId === 'ticTacToe') resetGame();
+            if (gameId === 'numberGuess') resetGuessGame();
+            if (gameId === 'fastClick') resetCountGame();
+            if (gameId === 'wordGuess') resetWordGuess();
+            if (gameId === 'luckGame') resetLuckGame();
+            if (gameId === 'huntingGame') resetHuntingGame();
         }
 
         // لعبة إكس أو
-        function startTicTacToeGame() {
-            const gameContainer = document.createElement('div');
-            gameContainer.innerHTML = `
-                <h2>لعبة إكس أو</h2>
-                <p id="xOStatus">اختر نمط اللعب:</p>
-                <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
-                <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
-                <div class="board" id="board" style="display: none;">
-                    <div class="cell" data-index="0"></div>
-                    <div class="cell" data-index="1"></div>
-                    <div class="cell" data-index="2"></div>
-                    <div class="cell" data-index="3"></div>
-                    <div class="cell" data-index="4"></div>
-                    <div class="cell" data-index="5"></div>
-                    <div class="cell" data-index="6"></div>
-                    <div class="cell" data-index="7"></div>
-                    <div class="cell" data-index="8"></div>
-                </div>
-                <div id="xOResult"></div>
-                <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
-            `;
-            document.getElementById('games').appendChild(gameContainer);
-        }
-
-        let currentPlayer = 'X';
-        let board = Array(9).fill(null);
-        let xOTimer;
+        let board, currentPlayer, gameMode;
+        const boardCells = document.querySelectorAll('.cell');
 
         function startLocalGame(mode) {
-            document.getElementById('board').style.display = 'grid'; // عرض لوحة إكس أو
-            setupTicTacToe();
-            startXOTimer();
+            gameMode = mode;
+            currentPlayer = 'X';
+            board = Array(9).fill(null);
+            document.getElementById('status').textContent = `اللاعب ${currentPlayer} يبدأ`;
+            document.getElementById('gameArea').style.display = 'block';
+            updateBoard();
         }
 
-        function setupTicTacToe() {
-            const cells = document.querySelectorAll('.cell');
-            cells.forEach(cell => {
-                cell.addEventListener('click', () => {
-                    handleMove(cell);
-                });
+        function updateBoard() {
+            boardCells.forEach((cell, index) => {
+                cell.textContent = board[index];
+                cell.onclick = () => handleMove(index);
             });
         }
 
-        function handleMove(cell) {
-            const index = cell.getAttribute('data-index');
+        function handleMove(index) {
             if (!board[index]) {
                 board[index] = currentPlayer;
-                cell.innerText = currentPlayer;
+                updateBoard();
                 if (checkWin()) {
-                    document.getElementById('xOResult').innerHTML = `<span class="winner">فائز! اللاعب ${currentPlayer}</span>`;
-                    document.getElementById('clapSound').play();
-                    clearInterval(xOTimer);
+                    playClapSound();
+                    document.getElementById('status').textContent = `اللاعب ${currentPlayer} فاز!`;
                 } else if (board.every(cell => cell)) {
-                    document.getElementById('xOResult').innerHTML = `<span class="loser">تعادل!</span>`;
-                    document.getElementById('laughSound').play();
-                    clearInterval(xOTimer);
+                    document.getElementById('status').textContent = 'تعادل!';
                 } else {
-                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                    document.getElementById('xOStatus').innerText = `اللاعب ${currentPlayer} يلعب الآن`;
+                    switchTurn();
+                    if (gameMode === 'computer' && currentPlayer === 'O') {
+                        computerMove();
+                    }
                 }
             }
+        }
+
+        function switchTurn() {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').textContent = `اللاعب ${currentPlayer} يلعب الآن`;
+        }
+
+        function computerMove() {
+            let availableCells = board.map((cell, index) => cell === null ? index : null).filter(index => index !== null);
+            let randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
+            handleMove(randomCell);
         }
 
         function checkWin() {
@@ -267,86 +269,178 @@
             );
         }
 
-        function startXOTimer() {
-            let timeLeft = 30;
-            document.getElementById('xOTime').innerText = timeLeft;
+        function resetGame() {
+            startLocalGame(gameMode);
+        }
 
-            xOTimer = setInterval(function() {
-                timeLeft--;
-                document.getElementById('xOTime').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(xOTimer);
-                    document.getElementById('xOResult').innerText = 'انتهت اللعبة!';
-                    document.getElementById('laughSound').play();
-                }
-            }, 1000);
+        // لعبة تخمين الرقم
+        function resetGuessGame() {
+            targetNumber = Math.floor(Math.random() * 50) + 1;
+            guessAttempts = 0;
+            document.getElementById('guessMessage').textContent = '';
+            document.getElementById('guessInput').value = '';
+        }
+
+        function submitGuess() {
+            let guess = Number(document.getElementById('guessInput').value);
+            guessAttempts++;
+            if (guess === targetNumber) {
+                playClapSound();
+                document.getElementById('guessMessage').textContent = `أحسنت! لقد خمنت الرقم الصحيح: ${targetNumber}`;
+            } else if (guessAttempts >= maxGuessAttempts) {
+                playLaughSound();
+                document.getElementById('guessMessage').textContent = `خسرت! الرقم الصحيح كان: ${targetNumber}`;
+            } else {
+                document.getElementById('guessMessage').textContent = guess > targetNumber ? 'الرقم أقل!' : 'الرقم أكبر!';
+            }
+        }
+
+        // لعبة العد السريع
+        function startCountGame() {
+            countClicks = 0;
+            timeLeft = 30;
+            countdownTimer = setInterval(updateTimer, 1000);
+            countTimer = setTimeout(endCountGame, 30000); // مؤقت 30 ثانية
+            document.getElementById('countButton').textContent = `اضغط بسرعة! (${countClicks})`;
+            document.getElementById('countButton').onclick = countClick;
+            document.getElementById('countMessage').textContent = '';
+        }
+
+        function countClick() {
+            countClicks++;
+            document.getElementById('countButton').textContent = `اضغط بسرعة! (${countClicks})`;
+            if (countClicks >= maxClicks) {
+                clearTimeout(countTimer);
+                clearInterval(countdownTimer);
+                playClapSound();
+                document.getElementById('countMessage').textContent = `أحسنت! وصلت إلى 50 نقرة!`;
+                document.getElementById('countButton').onclick = null;
+            }
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('countdownTimer').textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdownTimer);
+            }
+        }
+
+        function endCountGame() {
+            if (countClicks < maxClicks) {
+                playLaughSound();
+                document.getElementById('countMessage').textContent = `انتهى الوقت! لم تصل إلى 50 نقرة.`;
+                document.getElementById('countButton').onclick = null;
+            }
+        }
+
+        function resetCountGame() {
+            clearTimeout(countTimer);
+            clearInterval(countdownTimer);
+            document.getElementById('countButton').textContent = "ابدأ العد";
+            document.getElementById('countMessage').textContent = '';
+            document.getElementById('countdownTimer').textContent = '30';
+            countClicks = 0;
+            timeLeft = 30;
+        }
+
+        // لعبة تخمين الكلمة
+        function resetWordGuess() {
+            selectedWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('hintMessage').textContent = selectedWord.hint;
+            document.getElementById('wordMessage').textContent = '';
+            document.getElementById('wordInput').value = '';
+            timeLeft = 30;
+            document.getElementById('wordCountdownTimer').textContent = timeLeft;
+            clearInterval(wordCountdownTimer);
+            wordCountdownTimer = setInterval(updateWordTimer, 1000);
+        }
+
+        function updateWordTimer() {
+            timeLeft--;
+            document.getElementById('wordCountdownTimer').textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(wordCountdownTimer);
+                document.getElementById('wordMessage').textContent = `انتهى الوقت! الكلمة كانت: ${selectedWord.word}`;
+                document.getElementById('wordInput').disabled = true;
+            }
+        }
+
+        function submitWordGuess() {
+            const userGuess = document.getElementById('wordInput').value;
+            if (userGuess === selectedWord.word) {
+                clearInterval(wordCountdownTimer);
+                document.getElementById('wordMessage').textContent = `أحسنت! الكلمة الصحيحة هي: ${selectedWord.word}`;
+            } else {
+                document.getElementById('wordMessage').textContent = `خسرت! حاول مرة أخرى.`;
+            }
         }
 
         // لعبة الحظ
-        function startLuckGame() {
-            let attempts = 0;
-            let luckScore = 0;
-            const maxAttempts = 4;
+        let luckAttempts = 3; // عدد المحاولات
+        let goalsScored = 0; // عدد الأهداف
 
-            const gameContainer = document.createElement('div');
-            gameContainer.innerHTML = `
-                <h2>لعبة الحظ</h2>
-                <p>حاول أن تُدخل الكرة داخل المرمى</p>
-                <div id="luckArea">
-                    <div id="goal"></div>
-                    <div id="ball"></div>
-                </div>
-                <button onclick="throwBall()">ارمي الكرة</button>
-                <div id="luckResult"></div>
-                <div id="luckTimer">المؤقت: <span id="luckTime">30</span> ثواني</div>
-            `;
-            document.getElementById('games').appendChild(gameContainer);
+        function resetLuckGame() {
+            document.getElementById('luckMessage').textContent = '';
+            document.getElementById('finalMessage').textContent = '';
+            document.getElementById('ball').style.transform = 'translate(0px, 0px)';
+            goalsScored = 0;
+            luckAttempts = 3;
+            document.getElementById('throwButton').disabled = false;
+        }
 
-            startLuckTimer();
-
-            function throwBall() {
-                if (luckScore < 2 && attempts < maxAttempts) {
-                    const randomChance = Math.random() < 0.5; // 50% فرصة لدخول الكرة
-                    const ball = document.getElementById('ball');
-                    ball.style.bottom = '100px'; // تحريك الكرة للأعلى
-                    setTimeout(() => {
-                        ball.style.bottom = '20px'; // إعادة الكرة لمكانها الأصلي
-                        if (randomChance) {
-                            luckScore++;
-                            document.getElementById('luckResult').innerHTML = `<span class="winner">دخلت الكرة!</span>`;
-                            document.getElementById('goalSound').play();
-                        } else {
-                            document.getElementById('luckResult').innerHTML = `<span class="loser">لم تدخل الكرة!</span>`;
-                        }
-
-                        attempts++;
-                        if (luckScore === 2) {
-                            document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
-                            document.getElementById('clapSound').play();
-                            clearInterval(luckTimer);
-                        } else if (attempts >= maxAttempts) {
-                            document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
-                            document.getElementById('laughSound').play();
-                            clearInterval(luckTimer);
-                        }
-                    }, 500);
+        function throwBall() {
+            if (luckAttempts > 0) {
+                luckAttempts--;
+                const randomOutcome = Math.random();
+                const ball = document.getElementById('ball');
+                if (randomOutcome > 0.5) {
+                    playClapSound();
+                    goalsScored++;
+                    ball.style.transform = 'translate(0px, 50px)'; // الكرة تدخل المرمى
+                    document.getElementById('luckMessage').textContent = `هدف! الأهداف: ${goalsScored}`;
+                } else {
+                    playLaughSound();
+                    ball.style.transform = 'translate(100px, 50px)'; // الكرة تخرج من المرمى
+                    document.getElementById('luckMessage').textContent = `لم تدخل الكرة.`;
+                }
+                if (goalsScored >= 2) {
+                    document.getElementById('finalMessage').textContent = `فزت! الأهداف: ${goalsScored}`;
+                    document.getElementById('throwButton').disabled = true; // تعطيل الزر عند الفوز
+                }
+                if (luckAttempts === 0 && goalsScored < 2) {
+                    playLaughSound();
+                    document.getElementById('luckMessage').textContent = `انتهت المحاولات! الأهداف: ${goalsScored}.`;
+                    document.getElementById('throwButton').disabled = true; // تعطيل الزر عند انتهاء المحاولات
                 }
             }
+        }
 
-            function startLuckTimer() {
-                let timeLeft = 30;
-                document.getElementById('luckTime').innerText = timeLeft;
+        // لعبة الصيد
+        let caughtFish = 0;
 
-                const luckTimer = setInterval(function() {
-                    timeLeft--;
-                    document.getElementById('luckTime').innerText = timeLeft;
-                    if (timeLeft <= 0) {
-                        clearInterval(luckTimer);
-                        document.getElementById('luckResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
-                        document.getElementById('laughSound').play();
-                    }
-                }, 1000);
+        function catchFish() {
+            const success = Math.random() > 0.5; // 50% chance to catch a fish
+            if (success) {
+                caughtFish++;
+                document.getElementById('huntingMessage').textContent = `أحسنت! لقد اصطدت سمكة! الإجمالي: ${caughtFish}`;
+            } else {
+                document.getElementById('huntingMessage').textContent = `آسف! لم تصطاد سمكة.`;
             }
+        }
+
+        function resetHuntingGame() {
+            caughtFish = 0;
+            document.getElementById('huntingMessage').textContent = '';
+        }
+
+        // صوتيات
+        function playClapSound() {
+            document.getElementById('clapSound').play();
+        }
+
+        function playLaughSound() {
+            document.getElementById('laughSound').play();
         }
     </script>
 </body>
