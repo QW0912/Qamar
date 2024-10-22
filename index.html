@@ -55,6 +55,23 @@
             align-items: center;
             cursor: pointer;
         }
+        #luckArea {
+            width: 300px;
+            height: 200px;
+            background-color: lightblue;
+            position: relative;
+            margin: auto;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+        #goal {
+            width: 50px;
+            height: 50px;
+            background-color: green;
+            position: absolute;
+            top: 75px;
+            left: 125px;
+        }
     </style>
 </head>
 <body>
@@ -146,7 +163,7 @@
             startWordTimer(randomWord.word);
         }
 
-        function checkWord(correctWord) {
+        function checkWord() {
             const input = document.getElementById('wordInput').value;
             if (input === correctWord) {
                 document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
