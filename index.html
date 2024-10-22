@@ -11,62 +11,6 @@
             background-color: #87ceeb; /* لون السماء */
             overflow: hidden;
         }
-        #fishingArea {
-            width: 600px;
-            height: 400px;
-            background-color: #00bfff; /* لون البحر الأصلي */
-            position: relative;
-            margin: auto;
-            border: 2px solid #000;
-            overflow: hidden;
-            animation: waterWave 2s linear infinite; /* إضافة حركة للماء */
-            border-radius: 15px; /* زوايا دائرية */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* ظل للعبة */
-        }
-        @keyframes waterWave {
-            0% { background-position: 0 0; }
-            100% { background-position: 100% 0; }
-        }
-        .fish {
-            position: absolute;
-            width: 50px;
-            height: 30px;
-            background-size: cover;
-            transition: transform 0.2s;
-        }
-        .rod {
-            position: absolute;
-            width: 5px;
-            height: 100px;
-            background-color: #654321; /* لون السنارة */
-            left: 50%;
-            bottom: 0;
-            transform: translateX(-50%);
-        }
-        .score {
-            font-size: 24px;
-            margin-top: 20px;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* ظل للنص */
-        }
-        .shop {
-            margin-top: 20px;
-        }
-        .shop-item {
-            display: inline-block;
-            margin: 10px;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            border: 2px solid #000;
-            border-radius: 8px; /* زوايا دائرية */
-            transition: transform 0.3s, box-shadow 0.3s;
-            background-color: #ff6347; /* لون خلفية العناصر */
-        }
-        .shop-item:hover {
-            transform: scale(1.1); /* تكبير عند التمرير */
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); /* تأثير الظل عند التمرير */
-        }
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -83,40 +27,29 @@
             background-color: #ff4500; /* لون الخلفية عند التمرير */
             transform: scale(1.05); /* تكبير عند التمرير */
         }
-        #timer {
-            font-size: 20px;
-            color: red; /* لون المؤقت */
-        }
         .winner {
             font-size: 30px;
             font-weight: bold;
             color: green;
         }
+        .loser {
+            font-size: 30px;
+            font-weight: bold;
+            color: red;
+        }
     </style>
 </head>
 <body>
     <h1>ألعاب ممتعة</h1>
+    
+    <h2>اختر لعبة</h2>
+    <button onclick="showGame('wordGuess')">لعبة تخمين الكلمة</button>
+    <button onclick="showGame('ticTacToe')">لعبة إكس أو</button>
+    <button onclick="showGame('luckGame')">لعبة الحظ</button>
 
-    <h2>لعبة تخمين الكلمة</h2>
-    <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50">
-    <button onclick="checkWord()">تأكيد</button>
-    <button onclick="resetWordGame()">إعادة اللعب</button>
-    <div id="wordResult"></div>
-    <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
-
-    <h2>لعبة إكس أو</h2>
-    <p id="xOStatus">اختر نمط اللعب:</p>
-    <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
-    <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
-    <p id="xOOnlineStatus">والله مالي خلق أسوي 'اللعب أونلاين' بس انتظروا لين يصير لي خلق</p>
-    <div id="xOResult"></div>
-    <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
-
-    <h2>لعبة الحظ</h2>
-    <p>حاول أن تُدخل الكرة داخل المربع الأزرق</p>
-    <button onclick="startLuckGame()">ابدأ اللعبة</button>
-    <div id="luckResult"></div>
-    <div id="luckTimer">المؤقت: <span id="luckTime">30</span> ثواني</div>
+    <div id="gameArea" style="display:none;">
+        <!-- محتوى الألعاب سيظهر هنا -->
+    </div>
 
     <audio id="catchSound" src="https://www.soundjay.com/human/sounds/catch-1.mp3" preload="auto"></audio>
     <audio id="purchaseSound" src="https://www.soundjay.com/button/sounds/button-1.mp3" preload="auto"></audio>
@@ -125,25 +58,67 @@
     <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio>
 
     <script>
-        let wordScore = 0;
-        let xOScore = 0;
-        let luckScore = 0;
-        let wordTimer;
-        let xOTimer;
-        let luckTimer;
-        let isMuted = false; // حالة كتم الصوت
-        const backgroundMusic = document.getElementById('backgroundMusic');
+        const wordsWithHints = [
+            { word: "بطريق", hint: "كائن يعيش في الثلج" },
+            { word: "دب", hint: "كائن يعيش في الغابة" },
+            { word: "سمكة", hint: "كائن يعيش في الماء" },
+            { word: "فيل", hint: "أكبر حيوان على اليابسة" },
+            { word: "قطة", hint: "حيوان أليف مشهور" },
+            { word: "كلب", hint: "رفيق الإنسان" },
+            { word: "عصفور", hint: "يستطيع الطيران" },
+            { word: "أسد", hint: "ملك الغابة" },
+            { word: "جمل", hint: "يعيش في الصحراء" },
+            { word: "سلحفاة", hint: "حيوان بطيء" },
+            { word: "نسر", hint: "طائر جارح" },
+            { word: "خروف", hint: "يعيش في المزارع" },
+            { word: "ديك", hint: "يوقظ الناس في الصباح" },
+            { word: "فراشة", hint: "تحب الزهور" },
+            { word: "جندب", hint: "حشرة قافزة" },
+            { word: "دجاجة", hint: "تضع البيض" },
+            { word: "سنجاب", hint: "يحب الجوز" },
+            { word: "تمساح", hint: "يعيش في الماء" },
+            { word: "فراولة", hint: "فاكهة حمراء" },
+            { word: "بطيخ", hint: "فاكهة كبيرة" },
+            { word: "تفاح", hint: "فاكهة لذيذة" }
+        ];
+
+        function showGame(game) {
+            document.getElementById('gameArea').style.display = 'block';
+            document.getElementById('gameArea').innerHTML = ''; // تنظيف منطقة الألعاب
+
+            if (game === 'wordGuess') {
+                startWordGuessGame();
+            } else if (game === 'ticTacToe') {
+                startTicTacToeGame();
+            } else if (game === 'luckGame') {
+                startLuckGame();
+            }
+        }
 
         // لعبة تخمين الكلمة
+        function startWordGuessGame() {
+            const gameContainer = document.createElement('div');
+            gameContainer.innerHTML = `
+                <h2>تخمين الكلمة</h2>
+                <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50">
+                <button onclick="checkWord()">تأكيد</button>
+                <button onclick="resetWordGame()">إعادة اللعب</button>
+                <div id="wordResult"></div>
+                <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
+            `;
+            document.getElementById('gameArea').appendChild(gameContainer);
+            startWordTimer();
+        }
+
         function checkWord() {
             const input = document.getElementById('wordInput').value;
-            const correctWord = "بطريق"; // الكلمة الصحيحة
+            const correctWord = wordsWithHints[Math.floor(Math.random() * wordsWithHints.length)].word; // اختيار كلمة عشوائية
             if (input === correctWord) {
-                document.getElementById('wordResult').innerHTML = `<span class="winner">فائز!</span>`;
+                document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
                 document.getElementById('clapSound').play();
                 clearInterval(wordTimer);
             } else {
-                document.getElementById('wordResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
+                document.getElementById('wordResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى. الكلمة الصحيحة هي "${correctWord}".</span>`;
                 document.getElementById('laughSound').play();
                 clearInterval(wordTimer);
             }
@@ -159,7 +134,7 @@
             let timeLeft = 30;
             document.getElementById('wordTime').innerText = timeLeft;
 
-            wordTimer = setInterval(function() {
+            const wordTimer = setInterval(function() {
                 timeLeft--;
                 document.getElementById('wordTime').innerText = timeLeft;
                 if (timeLeft <= 0) {
@@ -171,10 +146,73 @@
         }
 
         // لعبة إكس أو
-        function startLocalGame(mode) {
-            // إعداد اللعبة (مؤقت، اللوحة، اللاعب، إلخ.)
+        function startTicTacToeGame() {
+            // إعداد لعبة إكس أو هنا
+            const gameContainer = document.createElement('div');
+            gameContainer.innerHTML = `
+                <h2>لعبة إكس أو</h2>
+                <p id="xOStatus">اختر نمط اللعب:</p>
+                <div class="board" id="board">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+                <div id="xOResult"></div>
+                <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
+            `;
+            document.getElementById('gameArea').appendChild(gameContainer);
             startXOTimer();
-            // هنا يمكنك إضافة منطق اللعبة ...
+            setupTicTacToe();
+        }
+
+        function setupTicTacToe() {
+            // إعداد اللوحة والإعدادات الخاصة بلعبة إكس أو هنا
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.addEventListener('click', () => {
+                    handleMove(cell);
+                });
+            });
+        }
+
+        let currentPlayer = 'X';
+        let board = Array(9).fill(null);
+
+        function handleMove(cell) {
+            const index = cell.getAttribute('data-index');
+            if (!board[index]) {
+                board[index] = currentPlayer;
+                cell.innerText = currentPlayer;
+                if (checkWin()) {
+                    document.getElementById('xOResult').innerHTML = `<span class="winner">فائز! اللاعب ${currentPlayer}</span>`;
+                    document.getElementById('clapSound').play();
+                    clearInterval(xOTimer);
+                } else if (board.every(cell => cell)) {
+                    document.getElementById('xOResult').innerHTML = `<span class="loser">تعادل!</span>`;
+                    document.getElementById('laughSound').play();
+                    clearInterval(xOTimer);
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                    document.getElementById('xOStatus').innerText = `اللاعب ${currentPlayer} يلعب الآن`;
+                }
+            }
+        }
+
+        function checkWin() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]  // Diagonals
+            ];
+            return winningCombinations.some(combination => 
+                combination.every(index => board[index] === currentPlayer)
+            );
         }
 
         function startXOTimer() {
@@ -197,7 +235,30 @@
             let attempts = 0;
             luckScore = 0;
             startLuckTimer();
-            // منطق لعبة الحظ هنا ...
+
+            const gameContainer = document.createElement('div');
+            gameContainer.innerHTML = `
+                <h2>لعبة الحظ</h2>
+                <p>حاول أن تُدخل الكرة داخل المربع الأزرق</p>
+                <div id="luckArea" style="width: 300px; height: 200px; background-color: lightblue; position: relative; margin: auto; border: 2px solid #000;">
+                    <div id="goal" style="width: 50px; height: 50px; background-color: green; position: absolute; top: 75px; left: 125px;"></div>
+                </div>
+                <button onclick="throwBall()">ارمي الكرة</button>
+                <div id="luckResult"></div>
+            `;
+            document.getElementById('gameArea').appendChild(gameContainer);
+        }
+
+        function throwBall() {
+            // منطق رمي الكرة
+            if (luckScore < 2) { // إذا لم يحصل على نقطتين بعد
+                luckScore++;
+                if (luckScore === 2) {
+                    document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
+                    document.getElementById('clapSound').play();
+                    clearInterval(luckTimer);
+                }
+            }
         }
 
         function startLuckTimer() {
@@ -213,27 +274,6 @@
                     document.getElementById('laughSound').play();
                 }
             }, 1000);
-        }
-
-        // دالة للتحقق من الفوز في لعبة الحظ
-        function checkLuckWin() {
-            if (luckScore >= 2) { // تحقق من تسجيل هدفين
-                document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
-                document.getElementById('clapSound').play();
-                clearInterval(luckTimer);
-            } else {
-                document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
-                document.getElementById('laughSound').play();
-                clearInterval(luckTimer);
-            }
-        }
-
-        // إضافة عناصر للتحكم في لعبة الحظ
-        function throwBall() {
-            // منطق رمي الكرة وتسجيل الأهداف هنا
-            // وزيادة luckScore عند دخول الكرة في المرمى
-            luckScore++; // فرضياً، لنفترض أن الكرة تدخل في المرمى
-            checkLuckWin(); // تحقق من الفوز
         }
     </script>
 </body>
