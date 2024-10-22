@@ -37,40 +37,34 @@
             font-weight: bold;
             color: red;
         }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-gap: 10px;
-            justify-content: center;
-            margin: 20px auto;
-        }
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: white;
-            border: 2px solid black;
-            font-size: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
         #luckArea {
             width: 300px;
             height: 200px;
-            background-color: lightblue;
             position: relative;
             margin: auto;
-            border: 2px solid #000;
             overflow: hidden;
+            background-color: lightblue;
+            border: 2px solid #000;
         }
         #goal {
-            width: 50px;
+            width: 100px;
             height: 50px;
-            background-color: green;
+            background-color: brown; /* لون المرمى */
             position: absolute;
-            top: 75px;
-            left: 125px;
+            bottom: 0;
+            left: calc(50% - 50px); /* يضع المرمى في المنتصف */
+            border: 2px solid black;
+            border-radius: 5px; /* زوايا دائرية للمرمى */
+        }
+        #ball {
+            width: 30px;
+            height: 30px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/3c/Football.png'); /* صورة كرة القدم */
+            background-size: cover;
+            position: absolute;
+            bottom: 20px; /* موضع الكرة */
+            left: calc(50% - 15px); /* يضع الكرة في المنتصف */
+            transition: bottom 0.5s;
         }
     </style>
 </head>
@@ -93,9 +87,9 @@
 
     <audio id="catchSound" src="https://www.soundjay.com/human/sounds/catch-1.mp3" preload="auto"></audio>
     <audio id="purchaseSound" src="https://www.soundjay.com/button/sounds/button-1.mp3" preload="auto"></audio>
-    <audio id="backgroundMusic" src="https://u.pcloud.link/publink/show?code=XZjIby5ZzX5YT3Bgqm8Q2FlQyvnedyBRMc1k" preload="auto" loop></audio>
+    <audio id="goalSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
     <audio id="clapSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
-    <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio>
+    <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio">
 
     <script>
         const wordsWithHints = [
@@ -163,7 +157,7 @@
             startWordTimer(randomWord.word);
         }
 
-        function checkWord() {
+        function checkWord(correctWord) {
             const input = document.getElementById('wordInput').value;
             if (input === correctWord) {
                 document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
@@ -290,62 +284,68 @@
         // لعبة الحظ
         function startLuckGame() {
             let attempts = 0;
-            luckScore = 0;
+            let luckScore = 0;
             const maxAttempts = 4;
-            startLuckTimer();
 
             const gameContainer = document.createElement('div');
             gameContainer.innerHTML = `
                 <h2>لعبة الحظ</h2>
-                <p>حاول أن تُدخل الكرة داخل المربع الأزرق</p>
-                <div id="luckArea" style="width: 300px; height: 200px; background-color: lightblue; position: relative; margin: auto; border: 2px solid #000;">
-                    <div id="goal" style="width: 50px; height: 50px; background-color: green; position: absolute; top: 75px; left: 125px;"></div>
+                <p>حاول أن تُدخل الكرة داخل المرمى</p>
+                <div id="luckArea">
+                    <div id="goal"></div>
+                    <div id="ball"></div>
                 </div>
                 <button onclick="throwBall()">ارمي الكرة</button>
                 <div id="luckResult"></div>
                 <div id="luckTimer">المؤقت: <span id="luckTime">30</span> ثواني</div>
             `;
             document.getElementById('games').appendChild(gameContainer);
-        }
 
-        let luckScore = 0;
-        function throwBall() {
-            if (luckScore < 2 && attempts < 4) {
-                // محاكاة دخول الكرة
-                const randomChance = Math.random() < 0.5; // 50% فرصة لدخول الكرة
-                if (randomChance) {
-                    luckScore++;
-                    document.getElementById('luckResult').innerHTML = `<span class="winner">دخلت الكرة!</span>`;
-                } else {
-                    document.getElementById('luckResult').innerHTML = `<span class="loser">لم تدخل الكرة!</span>`;
-                }
+            startLuckTimer();
 
-                attempts++;
-                if (luckScore === 2) {
-                    document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
-                    document.getElementById('clapSound').play();
-                    clearInterval(luckTimer);
-                } else if (attempts >= 4) {
-                    document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
-                    document.getElementById('laughSound').play();
-                    clearInterval(luckTimer);
+            function throwBall() {
+                if (luckScore < 2 && attempts < maxAttempts) {
+                    const randomChance = Math.random() < 0.5; // 50% فرصة لدخول الكرة
+                    const ball = document.getElementById('ball');
+                    ball.style.bottom = '100px'; // تحريك الكرة للأعلى
+                    setTimeout(() => {
+                        ball.style.bottom = '20px'; // إعادة الكرة لمكانها الأصلي
+                        if (randomChance) {
+                            luckScore++;
+                            document.getElementById('luckResult').innerHTML = `<span class="winner">دخلت الكرة!</span>`;
+                            document.getElementById('goalSound').play();
+                        } else {
+                            document.getElementById('luckResult').innerHTML = `<span class="loser">لم تدخل الكرة!</span>`;
+                        }
+
+                        attempts++;
+                        if (luckScore === 2) {
+                            document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
+                            document.getElementById('clapSound').play();
+                            clearInterval(luckTimer);
+                        } else if (attempts >= maxAttempts) {
+                            document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
+                            document.getElementById('laughSound').play();
+                            clearInterval(luckTimer);
+                        }
+                    }, 500);
                 }
             }
-        }
 
-        function startLuckTimer() {
-            let timeLeft = 30;
-            document.getElementById('luckTime').innerText = timeLeft;
-
-            luckTimer = setInterval(function() {
-                timeLeft--;
+            function startLuckTimer() {
+                let timeLeft = 30;
                 document.getElementById('luckTime').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(luckTimer);
-                    document.getElementById('luckResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
-                    document.getElementById('laughSound').play();
-                }
-            }, 1000);
+
+                const luckTimer = setInterval(function() {
+                    timeLeft--;
+                    document.getElementById('luckTime').innerText = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(luckTimer);
+                        document.getElementById('luckResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
+                        document.getElementById('laughSound').play();
+                    }
+                }, 1000);
+            }
         }
     </script>
 </body>
