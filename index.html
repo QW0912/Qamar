@@ -11,6 +11,62 @@
             background-color: #87ceeb; /* لون السماء */
             overflow: hidden;
         }
+        #fishingArea {
+            width: 600px;
+            height: 400px;
+            background-color: #00bfff; /* لون البحر الأصلي */
+            position: relative;
+            margin: auto;
+            border: 2px solid #000;
+            overflow: hidden;
+            animation: waterWave 2s linear infinite; /* إضافة حركة للماء */
+            border-radius: 15px; /* زوايا دائرية */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* ظل للعبة */
+        }
+        @keyframes waterWave {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 0; }
+        }
+        .fish {
+            position: absolute;
+            width: 50px;
+            height: 30px;
+            background-size: cover;
+            transition: transform 0.2s;
+        }
+        .rod {
+            position: absolute;
+            width: 5px;
+            height: 100px;
+            background-color: #654321; /* لون السنارة */
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+        }
+        .score {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* ظل للنص */
+        }
+        .shop {
+            margin-top: 20px;
+        }
+        .shop-item {
+            display: inline-block;
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border: 2px solid #000;
+            border-radius: 8px; /* زوايا دائرية */
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: #ff6347; /* لون خلفية العناصر */
+        }
+        .shop-item:hover {
+            transform: scale(1.1); /* تكبير عند التمرير */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); /* تأثير الظل عند التمرير */
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -27,45 +83,158 @@
             background-color: #ff4500; /* لون الخلفية عند التمرير */
             transform: scale(1.05); /* تكبير عند التمرير */
         }
-        /* باقي أنماط التصميم */
+        #timer {
+            font-size: 20px;
+            color: red; /* لون المؤقت */
+        }
+        .winner {
+            font-size: 30px;
+            font-weight: bold;
+            color: green;
+        }
     </style>
 </head>
 <body>
-    <h1>لعبة تخمين الكلمة</h1>
-    <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50"> <!-- السماح بأكثر من 5 حروف -->
+    <h1>ألعاب ممتعة</h1>
+
+    <h2>لعبة تخمين الكلمة</h2>
+    <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50">
     <button onclick="checkWord()">تأكيد</button>
-    <button onclick="resetGame()">إعادة اللعب</button>
-    <div id="result"></div>
+    <button onclick="resetWordGame()">إعادة اللعب</button>
+    <div id="wordResult"></div>
+    <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
 
-    <script>
-        function checkWord() {
-            const input = document.getElementById('wordInput').value;
-            // ضع منطق التحقق من الكلمة هنا
-            document.getElementById('result').innerText = `أنت أدخلت: ${input}`;
-        }
-
-        function resetGame() {
-            document.getElementById('wordInput').value = '';
-            document.getElementById('result').innerText = '';
-        }
-    </script>
-
-    <h1>لعبة إكس أو</h1>
-    <p id="status">اختر نمط اللعب:</p>
+    <h2>لعبة إكس أو</h2>
+    <p id="xOStatus">اختر نمط اللعب:</p>
     <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
     <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
-    <button onclick="startOnlineGame()">اللعب أونلاين</button>
-    <p id="onlineStatus">والله مالي خلق أسوي 'اللعب أونلاين' بس انتظروا لين يصير لي خلق</p>
+    <p id="xOOnlineStatus">والله مالي خلق أسوي 'اللعب أونلاين' بس انتظروا لين يصير لي خلق</p>
+    <div id="xOResult"></div>
+    <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
 
-    <h1>لعبة الحظ</h1>
-    <p>حاول أن تُدخل الكره داخل المربع الأزرق</p>
+    <h2>لعبة الحظ</h2>
+    <p>حاول أن تُدخل الكرة داخل المربع الأزرق</p>
     <button onclick="startLuckGame()">ابدأ اللعبة</button>
+    <div id="luckResult"></div>
+    <div id="luckTimer">المؤقت: <span id="luckTime">30</span> ثواني</div>
+
+    <audio id="catchSound" src="https://www.soundjay.com/human/sounds/catch-1.mp3" preload="auto"></audio>
+    <audio id="purchaseSound" src="https://www.soundjay.com/button/sounds/button-1.mp3" preload="auto"></audio>
+    <audio id="backgroundMusic" src="https://u.pcloud.link/publink/show?code=XZjIby5ZzX5YT3Bgqm8Q2FlQyvnedyBRMc1k" preload="auto" loop></audio>
+    <audio id="clapSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3" preload="auto"></audio>
+    <audio id="laughSound" src="https://www.soundjay.com/human/sounds/laugh-4.mp3" preload="auto"></audio>
 
     <script>
+        let wordScore = 0;
+        let xOScore = 0;
+        let luckScore = 0;
+        let wordTimer;
+        let xOTimer;
+        let luckTimer;
+        let isMuted = false; // حالة كتم الصوت
+        const backgroundMusic = document.getElementById('backgroundMusic');
+
+        // لعبة تخمين الكلمة
+        function checkWord() {
+            const input = document.getElementById('wordInput').value;
+            const correctWord = "بطريق"; // الكلمة الصحيحة
+            if (input === correctWord) {
+                document.getElementById('wordResult').innerHTML = `<span class="winner">فائز!</span>`;
+                document.getElementById('clapSound').play();
+                clearInterval(wordTimer);
+            } else {
+                document.getElementById('wordResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
+                document.getElementById('laughSound').play();
+                clearInterval(wordTimer);
+            }
+        }
+
+        function resetWordGame() {
+            document.getElementById('wordInput').value = '';
+            document.getElementById('wordResult').innerText = '';
+            startWordTimer();
+        }
+
+        function startWordTimer() {
+            let timeLeft = 30;
+            document.getElementById('wordTime').innerText = timeLeft;
+
+            wordTimer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('wordTime').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(wordTimer);
+                    document.getElementById('wordResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
+                    document.getElementById('laughSound').play();
+                }
+            }, 1000);
+        }
+
+        // لعبة إكس أو
+        function startLocalGame(mode) {
+            // إعداد اللعبة (مؤقت، اللوحة، اللاعب، إلخ.)
+            startXOTimer();
+            // هنا يمكنك إضافة منطق اللعبة ...
+        }
+
+        function startXOTimer() {
+            let timeLeft = 30;
+            document.getElementById('xOTime').innerText = timeLeft;
+
+            xOTimer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('xOTime').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(xOTimer);
+                    document.getElementById('xOResult').innerText = 'انتهت اللعبة!';
+                    document.getElementById('laughSound').play();
+                }
+            }, 1000);
+        }
+
+        // لعبة الحظ
         function startLuckGame() {
-            // منطق لعبة الحظ هنا
+            let attempts = 0;
+            luckScore = 0;
+            startLuckTimer();
+            // منطق لعبة الحظ هنا ...
+        }
+
+        function startLuckTimer() {
+            let timeLeft = 30;
+            document.getElementById('luckTime').innerText = timeLeft;
+
+            luckTimer = setInterval(function() {
+                timeLeft--;
+                document.getElementById('luckTime').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(luckTimer);
+                    document.getElementById('luckResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
+                    document.getElementById('laughSound').play();
+                }
+            }, 1000);
+        }
+
+        // دالة للتحقق من الفوز في لعبة الحظ
+        function checkLuckWin() {
+            if (luckScore >= 2) { // تحقق من تسجيل هدفين
+                document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
+                document.getElementById('clapSound').play();
+                clearInterval(luckTimer);
+            } else {
+                document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
+                document.getElementById('laughSound').play();
+                clearInterval(luckTimer);
+            }
+        }
+
+        // إضافة عناصر للتحكم في لعبة الحظ
+        function throwBall() {
+            // منطق رمي الكرة وتسجيل الأهداف هنا
+            // وزيادة luckScore عند دخول الكرة في المرمى
+            luckScore++; // فرضياً، لنفترض أن الكرة تدخل في المرمى
+            checkLuckWin(); // تحقق من الفوز
         }
     </script>
-
 </body>
 </html>
