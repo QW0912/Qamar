@@ -37,6 +37,24 @@
             font-weight: bold;
             color: red;
         }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid black;
+            font-size: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -100,6 +118,7 @@
             const gameContainer = document.createElement('div');
             gameContainer.innerHTML = `
                 <h2>تخمين الكلمة</h2>
+                <div id="hint"></div>
                 <input type="text" id="wordInput" placeholder="أدخل كلمتك" maxlength="50">
                 <button onclick="checkWord()">تأكيد</button>
                 <button onclick="resetWordGame()">إعادة اللعب</button>
@@ -107,12 +126,13 @@
                 <div id="wordTimer">المؤقت: <span id="wordTime">30</span> ثواني</div>
             `;
             document.getElementById('gameArea').appendChild(gameContainer);
-            startWordTimer();
+            const randomWord = wordsWithHints[Math.floor(Math.random() * wordsWithHints.length)];
+            document.getElementById('hint').innerText = `تلميح: ${randomWord.hint}`;
+            startWordTimer(randomWord.word);
         }
 
-        function checkWord() {
+        function checkWord(correctWord) {
             const input = document.getElementById('wordInput').value;
-            const correctWord = wordsWithHints[Math.floor(Math.random() * wordsWithHints.length)].word; // اختيار كلمة عشوائية
             if (input === correctWord) {
                 document.getElementById('wordResult').innerHTML = `<span class="winner">فائز! الكلمة الصحيحة هي "${correctWord}".</span>`;
                 document.getElementById('clapSound').play();
@@ -127,10 +147,10 @@
         function resetWordGame() {
             document.getElementById('wordInput').value = '';
             document.getElementById('wordResult').innerText = '';
-            startWordTimer();
+            startWordGuessGame(); // إعادة تشغيل اللعبة مع كلمة جديدة
         }
 
-        function startWordTimer() {
+        function startWordTimer(correctWord) {
             let timeLeft = 30;
             document.getElementById('wordTime').innerText = timeLeft;
 
@@ -139,7 +159,7 @@
                 document.getElementById('wordTime').innerText = timeLeft;
                 if (timeLeft <= 0) {
                     clearInterval(wordTimer);
-                    document.getElementById('wordResult').innerHTML = `<span class="loser">انتهت اللعبة!</span>`;
+                    document.getElementById('wordResult').innerHTML = `<span class="loser">انتهت اللعبة! الكلمة الصحيحة كانت "${correctWord}".</span>`;
                     document.getElementById('laughSound').play();
                 }
             }, 1000);
@@ -147,11 +167,12 @@
 
         // لعبة إكس أو
         function startTicTacToeGame() {
-            // إعداد لعبة إكس أو هنا
             const gameContainer = document.createElement('div');
             gameContainer.innerHTML = `
                 <h2>لعبة إكس أو</h2>
                 <p id="xOStatus">اختر نمط اللعب:</p>
+                <button onclick="startLocalGame('friend')">اللعب مع صديق</button>
+                <button onclick="startLocalGame('computer')">اللعب ضد الكمبيوتر</button>
                 <div class="board" id="board">
                     <div class="cell" data-index="0"></div>
                     <div class="cell" data-index="1"></div>
@@ -167,12 +188,15 @@
                 <div id="xOTimer">المؤقت: <span id="xOTime">30</span> ثواني</div>
             `;
             document.getElementById('gameArea').appendChild(gameContainer);
-            startXOTimer();
             setupTicTacToe();
+            startXOTimer();
         }
 
+        let currentPlayer = 'X';
+        let board = Array(9).fill(null);
+        let xOTimer;
+
         function setupTicTacToe() {
-            // إعداد اللوحة والإعدادات الخاصة بلعبة إكس أو هنا
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
                 cell.addEventListener('click', () => {
@@ -180,9 +204,6 @@
                 });
             });
         }
-
-        let currentPlayer = 'X';
-        let board = Array(9).fill(null);
 
         function handleMove(cell) {
             const index = cell.getAttribute('data-index');
@@ -234,6 +255,7 @@
         function startLuckGame() {
             let attempts = 0;
             luckScore = 0;
+            const maxAttempts = 4;
             startLuckTimer();
 
             const gameContainer = document.createElement('div');
@@ -249,13 +271,28 @@
             document.getElementById('gameArea').appendChild(gameContainer);
         }
 
+        let luckScore = 0;
         function throwBall() {
-            // منطق رمي الكرة
-            if (luckScore < 2) { // إذا لم يحصل على نقطتين بعد
-                luckScore++;
+            if (luckScore < 2) {
+                // محاكاة دخول الكرة
+                const randomChance = Math.random() < 0.5; // 50% فرصة لدخول الكرة
+                if (randomChance) {
+                    luckScore++;
+                    document.getElementById('luckResult').innerHTML = `<span class="winner">دخلت الكرة!</span>`;
+                } else {
+                    document.getElementById('luckResult').innerHTML = `<span class="loser">لم تدخل الكرة!</span>`;
+                }
+
                 if (luckScore === 2) {
                     document.getElementById('luckResult').innerHTML = `<span class="winner">فائز!</span>`;
                     document.getElementById('clapSound').play();
+                    clearInterval(luckTimer);
+                }
+
+                attempts++;
+                if (attempts >= 4) {
+                    document.getElementById('luckResult').innerHTML = `<span class="loser">خسرت! حاول مرة أخرى.</span>`;
+                    document.getElementById('laughSound').play();
                     clearInterval(luckTimer);
                 }
             }
